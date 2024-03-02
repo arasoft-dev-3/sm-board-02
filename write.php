@@ -1,36 +1,44 @@
 <?php
-include $_SERVER["DOCUMENT_ROOT"]."/inc/header.php";
+include $_SERVER["DOCUMENT_ROOT"]."/inc/header.php"; //header.php 파일안에 session_start()가 있음
+
+if(!$_SESSION['UID']){
+  echo "<script>alert('회원 전용 게시판입니다.');history.back();</script>";
+  exit;
+}
+
+//$bid=$_GET["bid"];//get으로 넘겼으니 get으로 받는다.
+
+if(isset($_GET["bid"])) {
+  $bid=$_GET["bid"];
+  if($bid){//bid가 있다는건 수정이라는 의미다.
+    $result = $mysqli->query("select * from board where bid=".$bid) or die("query error => ".$mysqli->error);
+    $rs = $result->fetch_object();
+    if($rs->userid!=$_SESSION['UID']){
+      echo "<script>alert('본인 글이 아니면 수정할 수 없습니다.');history.back();</script>";
+      exit;
+    }
+  }
+}
+
+
 
 // echo "<pre>";
 // print_r($rs);
 
 ?>
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-
-    <title>게시판 리스트</title>
-  </head>
-  <body>
-    <div class="col-md-8" style="margin:auto;padding:20px;">
-        <form method="post" action="write_ok">
-            <div class="mb-3">
-            <label for="exampleFormControlInput1" class="form-label">제목</label>
-                <input type="text" name="subject" class="form-control" id="exampleFormControlInput1" placeholder="제목을 입력하세요.">
-            </div>
-            <div class="mb-3">
-            <label for="exampleFormControlTextarea1" class="form-label">내용</label>
-            <textarea class="form-control" id="exampleFormControlTextarea1" name="content" rows="3"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">등록</button>
-        </form>
+<form method="post" action="write_ok">
+  <input type="hidden" name="bid" value="<?php echo $bid;?>">
+  <div class="mb-3">
+  <label for="exampleFormControlInput1" class="form-label">제목</label>
+    <input type="text" name="subject" class="form-control" id="exampleFormControlInput1" placeholder="제목을 입력하세요." value="<?php echo $rs->subject;?>">
+  </div>
+  <div class="mb-3">
+  <label for="exampleFormControlTextarea1" class="form-label">내용</label>
+  <textarea class="form-control" id="exampleFormControlTextarea1" name="content" rows="3"><?php echo $rs->content;?></textarea>
+  </div>
+  <button type="submit" class="btn btn-primary">등록</button>
+</form>
 <?php
 include $_SERVER["DOCUMENT_ROOT"]."/inc/footer.php";
 ?>

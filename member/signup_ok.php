@@ -1,5 +1,5 @@
 <?php
-include $_SERVER["DOCUMENT_ROOT"]."/dbcon.php";
+include $_SERVER["DOCUMENT_ROOT"]."/inc/dbcon.php";
 
 $userid=$_POST["userid"];
 $username=$_POST["username"];

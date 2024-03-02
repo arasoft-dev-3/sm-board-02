@@ -24,8 +24,10 @@ $rs = $result->fetch_object();
       <hr>
     </article>
     <nav class="blog-pagination" aria-label="Pagination">
-      <a class="btn btn-outline-primary" href="index">목록</a>
-      <!-- <a class="btn btn-outline-secondary" href="#">답글</a> -->
+      <a class="btn btn-outline-secondary" href="index">목록</a>
+      <a class="btn btn-outline-secondary" href="reply?bid=<?php echo $rs->bid;?>">답글</a>
+      <a class="btn btn-outline-secondary" href="write?bid=<?php echo $rs->bid;?>">수정</a>
+      <a class="btn btn-outline-secondary" href="delete?bid=<?php echo $rs->bid;?>">삭제</a>
     </nav>
 
 <?php
