@@ -1,7 +1,7 @@
 <?php
 include $_SERVER["DOCUMENT_ROOT"] . "/inc/header.php";
 
-$result = $mysqli->query("select * from board") or die("query error => " . $mysqli->error);
+$result = $mysqli->query("select * from board where status=1 order by bid desc") or die("query error => " . $mysqli->error);
 while ($rs = $result->fetch_object()) {
   $rsc[] = $rs;
 }
