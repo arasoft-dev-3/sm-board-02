@@ -1,10 +1,28 @@
 <?php
 include $_SERVER["DOCUMENT_ROOT"] . "/inc/header.php";
 
-$result = $mysqli->query("select * from board where status=1 order by bid desc") or die("query error => " . $mysqli->error);
-while ($rs = $result->fetch_object()) {
-  $rsc[] = $rs;
+// $result = $mysqli->query("select * from board where status=1 order by bid desc") or die("query error => " . $mysqli->error);
+// while ($rs = $result->fetch_object()) {
+//   $rsc[] = $rs;
+// }
+
+$search_keyword = $_GET['search_keyword'];
+
+if($search_keyword){
+$search_where = " and (subject like '%".$search_keyword."%' or content like '%".$search_keyword."%')";
 }
+
+$sql = "select * from board where 1=1";
+$sql .= " and status=1";
+$sql .= $search_where;
+$order = " order by bid desc";
+$query = $sql.$order;
+//echo "query=>".$query."<br>";
+$result = $mysqli->query($query) or die("query error => ".$mysqli->error);
+while($rs = $result->fetch_object()){
+  $rsc[]=$rs;
+}
+
 
 // echo "<pre>";
 // print_r($rsc);
@@ -22,8 +40,11 @@ while ($rs = $result->fetch_object()) {
   </thead>
   <tbody>
     <?php
-    $i = 1;
-    foreach ($rsc as $r) { ?>
+      $i=1;
+      foreach($rsc as $r){
+        //검색어만 하이라이트 해준다.
+        $subject = str_replace($search_keyword,"<span style='color:red;'>".$search_keyword."</span>",$r->subject);
+    ?>
     <tr>
       <th scope="row">
         <?php echo $i++ ?>
@@ -33,7 +54,7 @@ while ($rs = $result->fetch_object()) {
       </td>
       <td>
         <a href="view?bid=<?php echo $r->bid; ?>">
-          <?php echo $r->subject ?>
+          <?php echo $subject ?>
         </a>
       </td>
       <td>
@@ -43,6 +64,13 @@ while ($rs = $result->fetch_object()) {
     <?php } ?>
   </tbody>
 </table>
+
+<form method="get" action="<?php echo $_SERVER["PHP_SELF"]?>">
+  <div class="input-group mb-12" style="margin:auto;width:50%;">
+    <input type="text" class="form-control" name="search_keyword" id="search_keyword" placeholder="제목과 내용에서 검색합니다." value="<?php echo $search_keyword;?>" aria-label="Recipient's username" aria-describedby="button-addon2">
+    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">검색</button>
+  </div>
+</form>
 
 <p style="text-align:right;">
 
