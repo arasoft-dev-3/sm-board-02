@@ -6,7 +6,10 @@ if(!$_SESSION['UID']){
   exit;
 }
 
-//$bid=$_GET["bid"];//get으로 넘겼으니 get으로 받는다.
+$bid = isset($_GET["bid"]) ? $_GET["bid"] : '';//get으로 넘겼으니 get으로 받는다.
+$rs = new stdClass();
+$rs->subject = '';
+$rs->content = '';
 
 if(isset($_GET["bid"])) {
   $bid=$_GET["bid"];

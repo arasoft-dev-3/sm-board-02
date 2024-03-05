@@ -1,5 +1,5 @@
 <?php
-ini_set('display_errors', '0'); //혹시나 warning 메세지가 뜨는 사람들을 위해 추가
+//ini_set('display_errors', '0'); //혹시나 warning 메세지가 뜨는 사람들을 위해 추가
 $hostname = "dev.arasoft.kr";
 $dbuserid = "smlee";
 $dbpasswd = "tkdalselql";

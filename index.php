@@ -6,10 +6,11 @@ include $_SERVER["DOCUMENT_ROOT"] . "/inc/header.php";
 //   $rsc[] = $rs;
 // }
 
-$search_keyword = $_GET['search_keyword'];
+$search_keyword = isset($_GET['search_keyword']) ? $_GET['search_keyword'] : '';
+$search_where = '';
 
 if($search_keyword){
-$search_where = " and (subject like '%".$search_keyword."%' or content like '%".$search_keyword."%')";
+  $search_where = " and (subject like '%".$search_keyword."%' or content like '%".$search_keyword."%')";
 }
 
 $sql = "select * from board where 1=1";
