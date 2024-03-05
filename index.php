@@ -23,11 +23,21 @@ while($rs = $result->fetch_object()){
   $rsc[]=$rs;
 }
 
+// $userid = $_SESSION['UID'];
+//   echo "현재 접속 ID : ".$userid;
+$userid = $_SESSION['UID'];
 
-// echo "<pre>";
+
+  // echo "<pre>";
 // print_r($rsc);
 
 ?>
+<div>
+  <?php if(isset($_SESSION['UID'])) {
+  echo "id : ".$userid;
+  }
+  ?>
+</div>
 
 <table class="table" style="width:70%;margin:auto;">
   <thead>
