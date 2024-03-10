@@ -9,6 +9,7 @@ if(!$_SESSION['UID']){
 $subject=$_POST["subject"];
 $content=$_POST["content"];
 $bid=$_POST["bid"];//bid값이 있으면 수정이고 아니면 등록이다.
+$parent_id=$_POST["parent_id"];//parent_id가 있으면 답글이다.
 $userid=$_SESSION['UID'];//userid는 세션값으로 넣어준다.
 $status=1;//status는 1이면 true, 0이면 false이다.
 
@@ -22,7 +23,11 @@ if($bid){//bid값이 있으면 수정이고 아니면 등록이다.
     }
     $sql="update board set subject='".$subject."', content='".$content."' where bid=".$bid;//수정하기
 }else{
-    $sql="insert into board (userid,subject,content) values ('".$userid."','".$subject."','".$content."')";//등록하기
+    if($parent_id) { //답글인 경우 쿼리를 수정해서 parent_id를 넣어준다.
+        $sql="insert into board (userid,subject,content,parent_id) values ('".$userid."','".$subject."','".$content."','".$parent_id."')";//댓글등록
+    } else {
+        $sql="insert into board (userid,subject,content) values ('".$userid."','".$subject."','".$content."')";//등록하기
+    }
 }
 $result=$mysqli->query($sql) or die($mysqli->error);
 

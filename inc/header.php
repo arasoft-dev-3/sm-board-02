@@ -16,7 +16,14 @@ include $_SERVER["DOCUMENT_ROOT"] . "/inc/dbcon.php";
     integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
   </script>
   <title>게시판</title>
+  <style>
+    html, body {
+      padding: 0;
+      margin: 0;
+      font-size: 12px;
+    }
+  </style>
 </head>
 
 <body>
-  <div class="col-md-12" style="margin:auto;padding:20px;">
+  <div class="col-md-12" style="padding: 24px;">

@@ -7,19 +7,27 @@ if(!$_SESSION['UID']){
 }
 
 $bid = isset($_GET["bid"]) ? $_GET["bid"] : '';//get으로 넘겼으니 get으로 받는다.
+$parent_id = isset($_GET["parent_id"]) ? $_GET["parent_id"] : '';
+
+// 에러메세지 대응
 $rs = new stdClass();
 $rs->subject = '';
 $rs->content = '';
 
 if(isset($_GET["bid"])) {
   $bid=$_GET["bid"];
-  if($bid){//bid가 있다는건 수정이라는 의미다.
+  if($bid) { //bid가 있다는건 수정이라는 의미다.
     $result = $mysqli->query("select * from board where bid=".$bid) or die("query error => ".$mysqli->error);
     $rs = $result->fetch_object();
     if($rs->userid!=$_SESSION['UID']){
       echo "<script>alert('본인 글이 아니면 수정할 수 없습니다.');history.back();</script>";
       exit;
     }
+  }
+  if($parent_id) { //parent_id가 있다는건 답글이라는 의미다.
+    $result = $mysql->query("select * from board where bid=".$parent_id) or die("query error => ".$mysqli->error);
+    $rs = $result->fetch_object();
+    $rs->subject = "[RE]".$rs->subject;
   }
 }
 
@@ -32,6 +40,7 @@ if(isset($_GET["bid"])) {
 
 <form method="post" action="write_ok">
   <input type="hidden" name="bid" value="<?php echo $bid;?>">
+  <input type="hidden" name="parent_id" value="<?php echo $parent_id; ?>">
   <div class="mb-3">
   <label for="exampleFormControlInput1" class="form-label">제목</label>
     <input type="text" name="subject" class="form-control" id="exampleFormControlInput1" placeholder="제목을 입력하세요." value="<?php echo $rs->subject;?>">

@@ -16,7 +16,8 @@ if($search_keyword){
 $sql = "select * from board where 1=1";
 $sql .= " and status=1";
 $sql .= $search_where;
-$order = " order by bid desc";
+//$order = " order by bid desc";
+$order = " order by ifnull(parent_id, bid) desc, bid asc";
 $query = $sql.$order;
 //echo "query=>".$query."<br>";
 $result = $mysqli->query($query) or die("query error => ".$mysqli->error);
@@ -26,7 +27,7 @@ while($rs = $result->fetch_object()){
 
 // $userid = $_SESSION['UID'];
 //   echo "현재 접속 ID : ".$userid;
-$userid = $_SESSION['UID'];
+$userid = isset($_SESSION['UID']) ? $_SESSION['UID'] : '';
 
 
   // echo "<pre>";
@@ -40,7 +41,7 @@ $userid = $_SESSION['UID'];
   ?>
 </div>
 
-<table class="table" style="width:70%;margin:auto;">
+<table class="table" style="">
   <thead>
     <tr>
       <th scope="col">번호</th>
@@ -56,6 +57,7 @@ $userid = $_SESSION['UID'];
         //검색어만 하이라이트 해준다.
         $subject = str_replace($search_keyword,"<span style='color:red;'>".$search_keyword."</span>",$r->subject);
     ?>
+
     <tr>
       <th scope="row">
         <?php echo $i++ ?>
@@ -64,6 +66,7 @@ $userid = $_SESSION['UID'];
         <?php echo $r->userid ?>
       </td>
       <td>
+        <?php if($r->parent_id) { echo "&nbsp;&nbsp;"; } ?>
         <a href="view?bid=<?php echo $r->bid; ?>">
           <?php echo $subject ?>
         </a>
