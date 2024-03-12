@@ -66,10 +66,12 @@ $userid = isset($_SESSION['UID']) ? $_SESSION['UID'] : '';
         <?php echo $r->userid ?>
       </td>
       <td>
-        <?php if($r->parent_id) { echo "&nbsp;&nbsp;"; } ?>
-        <a href="view?bid=<?php echo $r->bid; ?>">
-          <?php echo $subject ?>
-        </a>
+        <?php 
+        if($r->parent_id) { 
+          echo "&nbsp;&nbsp;"; 
+          } 
+        ?>
+        <a href="view?bid=<?php echo $r->bid; ?>"><?php echo $subject ?></a>
       </td>
       <td>
         <?php echo $r->regdate ?>

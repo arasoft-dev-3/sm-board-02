@@ -21,7 +21,10 @@ if($bid){//bid값이 있으면 수정이고 아니면 등록이다.
         echo "<script>alert('본인 글이 아니면 수정할 수 없습니다.');location.href='index';</script>";
         exit;
     }
-    $sql="update board set subject='".$subject."', content='".$content."' where bid=".$bid;//수정하기
+    
+    //$sql="update board set subject='".$subject."', content='".$content."' where bid=".$bid;//수정하기
+    $sql="update board set subject='".$subject."', content='".$content."', modifydate=now() where bid=".$bid;
+
 }else{
     if($parent_id) { //답글인 경우 쿼리를 수정해서 parent_id를 넣어준다.
         $sql="insert into board (userid,subject,content,parent_id) values ('".$userid."','".$subject."','".$content."','".$parent_id."')";//댓글등록
