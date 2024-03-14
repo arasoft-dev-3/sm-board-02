@@ -4,7 +4,7 @@ $hostname = "dev.arasoft.kr";
 $dbuserid = "smlee";
 $dbpasswd = "tkdalselql";
 $dbname = "smlee1";
-$dbport = "5591";
+$dbport = "34591";
 
 $mysqli = new mysqli($hostname, $dbuserid, $dbpasswd, $dbname, $dbport);
 

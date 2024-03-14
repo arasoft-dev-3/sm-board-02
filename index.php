@@ -1,11 +1,6 @@
 <?php
 include $_SERVER["DOCUMENT_ROOT"] . "/inc/header.php";
 
-// $result = $mysqli->query("select * from board where status=1 order by bid desc") or die("query error => " . $mysqli->error);
-// while ($rs = $result->fetch_object()) {
-//   $rsc[] = $rs;
-// }
-
 $search_keyword = isset($_GET['search_keyword']) ? $_GET['search_keyword'] : '';
 $search_where = '';
 
@@ -13,30 +8,56 @@ if($search_keyword){
   $search_where = " and (subject like '%".$search_keyword."%' or content like '%".$search_keyword."%')";
 }
 
+$pageNumber  = $_GET['pageNumber']??1;//현재 페이지, 없으면 1
+if($pageNumber < 1) $pageNumber = 1;
+$pageCount  = $_GET['pageCount']??10;//페이지당 몇개씩 보여줄지, 없으면 10
+$startLimit = ($pageNumber-1)*$pageCount;//쿼리의 limit 시작 부분
+$firstPageNumber  = isset($_GET['firstPageNumber']) ? $_GET['firstPageNumber'] : '';
+
 $sql = "select * from board where 1=1";
 $sql .= " and status=1";
 $sql .= $search_where;
 //$order = " order by bid desc";
 $order = " order by ifnull(parent_id, bid) desc, bid asc";
-$query = $sql.$order;
+$limit = " limit 0, 10";
+$query = $sql.$order.$limit;
 //echo "query=>".$query."<br>";
 $result = $mysqli->query($query) or die("query error => ".$mysqli->error);
 while($rs = $result->fetch_object()){
   $rsc[]=$rs;
 }
 
-// $userid = $_SESSION['UID'];
-//   echo "현재 접속 ID : ".$userid;
-$userid = isset($_SESSION['UID']) ? $_SESSION['UID'] : '';
+// 전체게시물 수 구하기
+$sqlcnt = "select count(*) as cnt from board where 1=1";
+$sqlcnt .= " and status=1";
+$sqlcnt .= $search_where;
+$countresult = $mysqli->query($sqlcnt) or die("query error => ".$mysqli->error);
+$rscnt = $countresult->fetch_object();
+$totalCount = $rscnt->cnt;//전체 게시물 갯수를 구한다.
+$totalPage = ceil($totalCount/$pageCount);//전체 페이지를 구한다.
+
+if($firstPageNumber < 1) $firstPageNumber = 1;
+$lastPageNumber = $firstPageNumber + $pageCount - 1;//페이징 나오는 부분에서 레인지를 정한다.
+if($lastPageNumber > $totalPage) $lastPageNumber = $totalPage;
+
+if($firstPageNumber > $totalPage) {
+    echo "<script>alert('더 이상 페이지가 없습니다.');history.back();</script>";
+    exit;
+}
 
 
-  // echo "<pre>";
+// echo "<pre>";
 // print_r($rsc);
 
+$userid = isset($_SESSION['UID']) ? $_SESSION['UID'] : '';
 ?>
-<div>
-  <?php if(isset($_SESSION['UID'])) {
-  echo "id : ".$userid;
+
+<div style="margin-bottom: 20px;">
+  <?php 
+  if(isset($_SESSION['UID'])) {
+    echo "현재 접속 id : ".$userid;
+  } else {
+    echo "로그인 하시기 바랍니다.";
   }
   ?>
 </div>
@@ -52,7 +73,8 @@ $userid = isset($_SESSION['UID']) ? $_SESSION['UID'] : '';
   </thead>
   <tbody>
     <?php
-      $i=1;
+      //$i=1;
+      $idNumber = $totalCount - ($pageNumber-1)*$pageCount;
       foreach($rsc as $r){
         //검색어만 하이라이트 해준다.
         $subject = str_replace($search_keyword,"<span style='color:red;'>".$search_keyword."</span>",$r->subject);
@@ -60,7 +82,7 @@ $userid = isset($_SESSION['UID']) ? $_SESSION['UID'] : '';
 
     <tr>
       <th scope="row">
-        <?php echo $i++ ?>
+        <?php echo $idNumber--;?>
       </th>
       <td>
         <?php echo $r->userid ?>
@@ -87,6 +109,26 @@ $userid = isset($_SESSION['UID']) ? $_SESSION['UID'] : '';
     <button class="btn btn-outline-secondary" type="submit" id="button-addon2">검색</button>
   </div>
 </form>
+
+<p>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+      <li class="page-item">
+        <a class="page-link" href="<?php echo $_SERVER['PHP_SELF']?>?pageNumber=<?php echo $firstPageNumber-$pageCount;?>&firstPageNumber=<?php echo $firstPageNumber-$pageCount;?>&search_keyword=<?php echo $search_keyword;?>">Previous</a>
+      </li>
+      <?php
+        for($i=$firstPageNumber;$i<=$lastPageNumber;$i++){
+      ?>
+        <li class="page-item <?php if($pageNumber==$i){echo "active";}?>"><a class="page-link" href="<?php echo $_SERVER['PHP_SELF']?>?pageNumber=<?php echo $i;?>&firstPageNumber=<?php echo $firstPageNumber;?>&search_keyword=<?php echo $search_keyword;?>"><?php echo $i;?></a></li>
+      <?php
+          }
+      ?>
+      <li class="page-item">
+        <a class="page-link" href="<?php echo $_SERVER['PHP_SELF']?>?pageNumber=<?php echo $firstPageNumber+$pageCount;?>&firstPageNumber=<?php echo $firstPageNumber+$pageCount;?>&search_keyword=<?php echo $search_keyword;?>">Next</a>
+      </li>
+    </ul>
+  </nav>
+</p>
 
 <p style="text-align:right;">
 
