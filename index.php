@@ -52,6 +52,7 @@ if($firstPageNumber > $totalPage) {
 $userid = isset($_SESSION['UID']) ? $_SESSION['UID'] : '';
 ?>
 
+<!-- 접속한 아이디 보여주기 -->
 <div style="margin-bottom: 20px;">
   <?php 
   if(isset($_SESSION['UID'])) {
@@ -62,6 +63,9 @@ $userid = isset($_SESSION['UID']) ? $_SESSION['UID'] : '';
   ?>
 </div>
 
+<!-- 더보기 버튼을 클릭하면 다음 페이지를 넘겨주기 위해 현재 페이지에 1을 더한 값을 준비한다. 더보기를 클릭할때마다 1씩 더해준다. -->
+<input type="hidden" name="nextPageNumber" id="nextPageNumber" value="<?php echo $pageNumber+1;?>">
+
 <table class="table" style="">
   <thead>
     <tr>
@@ -71,7 +75,7 @@ $userid = isset($_SESSION['UID']) ? $_SESSION['UID'] : '';
       <th scope="col">등록일</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody id="board_list">
     <?php
       //$i=1;
       $idNumber = $totalCount - ($pageNumber-1)*$pageCount;
@@ -102,7 +106,9 @@ $userid = isset($_SESSION['UID']) ? $_SESSION['UID'] : '';
     <?php } ?>
   </tbody>
 </table>
-
+<div class="d-grid gap-2" style="margin:20px;">
+    <button class="btn btn-secondary" type="button" id="more_button">더보기</button>
+</div>
 <form method="get" action="<?php echo $_SERVER["PHP_SELF"]?>">
   <div class="input-group mb-12" style="margin:auto;width:50%;">
     <input type="text" class="form-control" name="search_keyword" id="search_keyword" placeholder="제목과 내용에서 검색합니다." value="<?php echo $search_keyword;?>" aria-label="Recipient's username" aria-describedby="button-addon2">
@@ -110,7 +116,7 @@ $userid = isset($_SESSION['UID']) ? $_SESSION['UID'] : '';
   </div>
 </form>
 
-<p>
+<!-- <p>
   <nav aria-label="Page navigation example">
     <ul class="pagination justify-content-center">
       <li class="page-item">
@@ -128,7 +134,7 @@ $userid = isset($_SESSION['UID']) ? $_SESSION['UID'] : '';
       </li>
     </ul>
   </nav>
-</p>
+</p> -->
 
 <p style="text-align:right;">
 
@@ -146,6 +152,36 @@ $userid = isset($_SESSION['UID']) ? $_SESSION['UID'] : '';
   }
   ?>
 </p>
+
+<script>
+  $("#more_button").click(function () {
+      
+    var data = {//more_list_page.php에 넘겨주는 파라미터 값이다.
+      pageNumber : $('#nextPageNumber').val() ,
+      pageCount : <?php echo $pageCount;?>,
+      totalCount : <?php echo $totalCount;?>,
+      search_keyword : '<?php echo $search_keyword;?>'
+    };
+    $.ajax({
+      async : false ,
+      type : 'post' ,//post방식으로 넘겨준다. ajax는 반드시 post로 해준다.
+      url : 'more_list_page' ,
+      data  : data ,//위에서 만든 파라미터들을 넘겨준다.
+      dataType : 'html' ,//리턴받을 형식이다. html말고 text난 json도 있다. json을 가장 많이 쓴다.
+      error : function() {} ,
+      success : function(return_data) {
+        if(return_data==false){
+          alert('마지막 페이지입니다.');
+          return;
+        }else{
+          $("#board_list").append(return_data);//table 마지막에 붙여준다. 반대는 prepend가 있다.
+          $("#nextPageNumber").val(parseInt($('#nextPageNumber').val())+1);//다음페이지를 위해 1씩 증가해준다.
+        }
+      }
+});
+    return false;
+  });
+</script>
 
 <?php
 include $_SERVER["DOCUMENT_ROOT"] . "/inc/footer.php";
