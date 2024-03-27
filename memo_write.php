@@ -3,7 +3,7 @@ include $_SERVER["DOCUMENT_ROOT"]."/inc/dbcon.php";
 ini_set( 'display_errors', '1' );
 
 if(!$_SESSION['UID']){
-  echo "<script>alert('로그인 하시기 바랍니다.');history.back();</script>";
+  echo "<script>alert('로그인 하시기 바랍니다11.');history.back();</script>";
   exit;
 }
 
